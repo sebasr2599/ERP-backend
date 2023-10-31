@@ -44,7 +44,24 @@ export class UserService {
   }
 
   async update(id: number, user: Prisma.UserUpdateInput): Promise<User> {
-    return await this.prisma.user.update({ where: { id }, data: user });
+    const userQuery = await this.prisma.user.update({
+      where: { id },
+      data: { ...user, password: undefined },
+    });
+    delete userQuery.password;
+    return userQuery;
+  }
+
+  async updatePassword(id: number, password: string): Promise<User> {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const userQuery = await this.prisma.user.update({
+      where: { id },
+      data: { password: hashedPassword },
+    });
+    delete userQuery.password;
+    return userQuery;
   }
 
   async remove(id: number): Promise<void> {

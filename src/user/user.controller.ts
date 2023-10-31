@@ -6,10 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  // UseGuards, // remove to have jwt guard
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User, Prisma } from '@prisma/client';
-
+/*
+ * Remove comment to have JWT guard
+ * import { JWTAuthGuard } from 'src/auth/jwt-auth.guard';
+ * @UseGuards(JWTAuthGuard)
+ */
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -32,11 +37,17 @@ export class UserController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body() user: Prisma.UserUpdateInput,
-  ): Promise<User> {
+    @Body() user: Partial<Prisma.UserUpdateInput>,
+  ): Promise<Partial<User>> {
     return this.userService.update(+id, user);
   }
-
+  @Patch(':id/password')
+  async updatePassword(
+    @Param('id') id: string,
+    @Body() password: string,
+  ): Promise<User> {
+    return this.userService.updatePassword(+id, password);
+  }
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
     return this.userService.remove(+id);
