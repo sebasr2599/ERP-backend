@@ -16,6 +16,6 @@ export class AuthController {
   @UseGuards(JWTAuthGuard)
   @Get()
   testEnd() {
-    return 'Test2';
+    return { message: 'Success jwt bearer token is working' };
   }
 }
