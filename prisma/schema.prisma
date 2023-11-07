@@ -59,7 +59,7 @@ model Product {
 model Inventory {
   id        Int      @id @default(autoincrement())
   product   Product  @relation(fields: [productId], references: [id])
-  quantity  Int
+  quantity  Float
   date      DateTime
   user      User     @relation(fields: [userId], references: [id])
   location  String
@@ -115,7 +115,7 @@ model OrderDetail {
   id        Int     @id @default(autoincrement())
   order     Order   @relation(fields: [orderId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
+  quantity  Float
   price     Float
   unit      Unit    @relation(fields: [unitId], references: [id])
   orderId   Int
