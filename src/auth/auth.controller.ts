@@ -10,8 +10,17 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Req() request): any {
-    return this.authService.loginJWT(request.user.id, request.user.username);
+  async login(@Req() request): Promise<any> {
+    const token = await this.authService.loginJWT(
+      request.user.id,
+      request.user.username,
+    );
+    return {
+      access_token: token,
+      first_name: request.user.first_name,
+      last_name: request.user.last_name,
+      rol: request.user.rol,
+    };
   }
   @UseGuards(JWTAuthGuard)
   @Get()
