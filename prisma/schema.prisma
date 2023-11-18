@@ -11,10 +11,114 @@ datasource db {
 }
 
 model User {
-  id         Int    @id @default(autoincrement())
-  username   String @unique
-  first_name String
-  last_name  String
-  password   String
-  rol        String
+  id                 Int                  @id @default(autoincrement())
+  username           String               @unique
+  first_name         String
+  last_name          String
+  password           String
+  rol                String
+  Inventory          Inventory[]
+  HistoricPrice      HistoricPrice[]
+  HistoricEquivalent HistoricEquivalent[]
+  Order              Order[]
+}
+
+model Category {
+  id      Int       @id @default(autoincrement())
+  name    String    @unique
+  Product Product[]
+}
+
+model Unit {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique
+  Product            Product[]
+  EquivalentUnit     EquivalentUnit[]
+  HistoricEquivalent HistoricEquivalent[]
+  OrderDetail        OrderDetail[]
+}
+
+model Product {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique
+  description        String
+  priceUnit          Float
+  priceWholesale     Float
+  category           Category             @relation(fields: [categoryId], references: [id])
+  unit               Unit                 @relation(fields: [unitId], references: [id])
+  image              String
+  unitId             Int
+  Inventory          Inventory[]
+  HistoricPrice      HistoricPrice[]
+  EquivalentUnit     EquivalentUnit[]
+  HistoricEquivalent HistoricEquivalent[]
+  OrderDetail        OrderDetail[]
+  categoryId         Int
+}
+
+model Inventory {
+  id        Int      @id @default(autoincrement())
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Float
+  date      DateTime
+  user      User     @relation(fields: [userId], references: [id])
+  location  String
+  productId Int
+  userId    Int
+}
+
+model HistoricPrice {
+  id             Int      @id @default(autoincrement())
+  product        Product  @relation(fields: [productId], references: [id])
+  priceUnit      Float
+  priceWholesale Float
+  date           DateTime
+  user           User     @relation(fields: [userId], references: [id])
+  productId      Int
+  userId         Int
+}
+
+model EquivalentUnit {
+  id         Int     @id @default(autoincrement())
+  product    Product @relation(fields: [productId], references: [id])
+  unit       Unit    @relation(fields: [unitId], references: [id])
+  equivalent Float
+  productId  Int
+  unitId     Int
+}
+
+model HistoricEquivalent {
+  id         Int      @id @default(autoincrement())
+  product    Product  @relation(fields: [productId], references: [id])
+  unit       Unit     @relation(fields: [unitId], references: [id])
+  equivalent Float
+  date       DateTime
+  user       User     @relation(fields: [userId], references: [id])
+  productId  Int
+  unitId     Int
+  userId     Int
+}
+
+model Order {
+  id          Int           @id @default(autoincrement())
+  date        DateTime
+  user        User          @relation(fields: [userId], references: [id])
+  location    String
+  wholesale   Boolean
+  status      String
+  total       Float
+  userId      Int
+  OrderDetail OrderDetail[]
+}
+
+model OrderDetail {
+  id        Int     @id @default(autoincrement())
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Float
+  price     Float
+  unit      Unit    @relation(fields: [unitId], references: [id])
+  orderId   Int
+  productId Int
+  unitId    Int
 }
