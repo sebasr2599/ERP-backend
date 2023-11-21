@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product, Prisma } from '@prisma/client';
 
@@ -28,7 +36,10 @@ export class ProductController {
   }
 
   @Patch(':id')
-  async update( @Param('id') id: string, @Body() product: Partial<Prisma.ProductUpdateInput>): Promise<Product> {
+  async update(
+    @Param('id') id: string,
+    @Body() product: Partial<Prisma.ProductUpdateInput>,
+  ): Promise<Product> {
     return this.productService.update(+id, product);
   }
 

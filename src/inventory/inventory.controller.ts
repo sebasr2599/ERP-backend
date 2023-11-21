@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { Inventory, Prisma } from '@prisma/client';
 
@@ -7,7 +15,9 @@ export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
 
   @Post()
-  async create(@Body() inventory: Prisma.InventoryCreateInput): Promise<Inventory> {
+  async create(
+    @Body() inventory: Prisma.InventoryCreateInput,
+  ): Promise<Inventory> {
     return this.inventoryService.create(inventory);
   }
 
@@ -22,7 +32,10 @@ export class InventoryController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() inventory: Partial<Prisma.InventoryUpdateInput>): Promise<Inventory> {
+  async update(
+    @Param('id') id: string,
+    @Body() inventory: Partial<Prisma.InventoryUpdateInput>,
+  ): Promise<Inventory> {
     return this.inventoryService.update(+id, inventory);
   }
 
