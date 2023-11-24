@@ -27,6 +27,12 @@ export class ProductController {
     return this.productService.findByName(name);
   }
 
+  //get product and its category and unit
+  @Get(':id/details')
+  async findOneWithCategoryAndUnit(@Param('id') id: string): Promise<Product> {
+    return this.productService.findOneWithCategoryAndUnit(+id);
+  }
+
   @Patch(':id')
   async update( @Param('id') id: string, @Body() product: Partial<Prisma.ProductUpdateInput>): Promise<Product> {
     return this.productService.update(+id, product);

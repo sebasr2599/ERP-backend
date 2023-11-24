@@ -50,4 +50,10 @@ export class OrderController {
   async remove(@Param('id') id: string): Promise<Order> {
     return this.orderService.remove(+id);
   }
+
+  // delete an order and its details
+  @Delete(':id/details')
+  async deleteWithDetails(@Param('id') id: string): Promise<Order> {
+    return this.orderService.deleteWithDetails(+id);
+  }
 }

@@ -10,6 +10,31 @@ export class OrderService {
     return this.prisma.order.create({ data });
   }
 
+  // create order with order details
+  async createWithDetails(data: Prisma.OrderCreateInput, orderDetails: Prisma.OrderDetailCreateInput[]): Promise<Order> {
+    const order = await this.prisma.order.create({ data });
+    orderDetails.forEach(async (orderDetail: Prisma.OrderDetailCreateInput) => {
+      await this.prisma.orderDetail.create({ data: { ...orderDetail} as Prisma.OrderDetailCreateInput });
+    });
+    return order;
+    //expample of json received by this method
+
+    // {
+    //   "data": {
+    //     "date": "2021-10-01T00:00:00.000Z",
+    //     "status": "PENDING",
+    //     "userId": 1,
+    //     "orderDetails": [
+    //       {
+    //         "productId": 1,
+    //         "quantity": 1
+    //       },
+    //       {
+    //         "productId": 2,
+    //         "quantity": 1
+
+  }
+
   async findAll(): Promise<Order[]> {
     return this.prisma.order.findMany();
   }
@@ -54,6 +79,14 @@ export class OrderService {
       await this.prisma.inventory.update({ where: { id: orderDetail.productId }, data: { quantity: newQuantity } });
     });
     return this.prisma.order.update({ where: { id }, data: { status: 'RELEASED' } });
+  } 
+
+  //create an async function to delete and order and its details
+  async deleteWithDetails(id: number): Promise<Order> {
+    //delete order details
+    await this.prisma.orderDetail.deleteMany({ where: { orderId: id } });
+    //delete order
+    return this.prisma.order.delete({ where: { id } });
   }
 
   async update(id: number, data: Prisma.OrderUpdateInput): Promise<Order> {
