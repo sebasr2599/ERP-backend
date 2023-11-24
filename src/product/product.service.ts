@@ -10,7 +10,7 @@ export class ProductService {
     return await this.prisma.product.create({ data: product });
   }
 
-  async findAll(): Promise<Partial<Product>[]> {
+  async findAll(): Promise<Product[]> {
     return await this.prisma.product.findMany({
       select: {
         id: true,
