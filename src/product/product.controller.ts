@@ -20,19 +20,25 @@ export class ProductController {
   }
 
   @Get()
-  async findAll(): Promise<Partial<Product>[]> {
+  async findAll(): Promise<Product[]> {
     return this.productService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Partial<Product>> {
+  async findOne(@Param('id') id: string): Promise<Product> {
     return this.productService.findOne(+id);
   }
 
   //get product by name
   @Get('/name/:name')
-  async findByName(@Param('name') name: string): Promise<Partial<Product>[]> {
+  async findByName(@Param('name') name: string): Promise<Product[]> {
     return this.productService.findByName(name);
+  }
+
+  //get product and its category and unit
+  @Get(':id/details')
+  async findOneWithCategoryAndUnit(@Param('id') id: string): Promise<Product> {
+    return this.productService.findOneWithCategoryAndUnit(+id);
   }
 
   @Patch(':id')

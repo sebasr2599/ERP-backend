@@ -10,7 +10,7 @@ export class ProductService {
     return await this.prisma.product.create({ data: product });
   }
 
-  async findAll(): Promise<Partial<Product>[]> {
+  async findAll(): Promise<Product[]> {
     return await this.prisma.product.findMany({
       select: {
         id: true,
@@ -25,7 +25,7 @@ export class ProductService {
     });
   }
 
-  async findOne(id: number): Promise<Partial<Product>> {
+  async findOne(id: number): Promise<Product> {
     return await this.prisma.product.findUnique({
       where: { id },
       select: {
@@ -41,8 +41,19 @@ export class ProductService {
     });
   }
 
+  //return product with category and unit
+  async findOneWithCategoryAndUnit(id: number): Promise<Product> {
+    return await this.prisma.product.findUnique({
+      where: { id },
+      include: {
+        category: true,
+        unit: true,
+      },
+    });
+  }
+
   //find by name but name doesnt have to exactly match
-  async findByName(name: string): Promise<Partial<Product>[]> {
+  async findByName(name: string): Promise<Product[]> {
     return await this.prisma.product.findMany({
       where: {
         name: {
