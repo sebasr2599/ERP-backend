@@ -24,7 +24,7 @@ export class AuthController {
   }
   @UseGuards(JWTAuthGuard)
   @Get()
-  testEnd() {
-    return { message: 'Success jwt bearer token is working' };
+  async checkAuth(@Req() request) {
+    return await this.authService.getUser(+request.user.id);
   }
 }

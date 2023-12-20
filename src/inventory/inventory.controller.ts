@@ -6,19 +6,26 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { Inventory, Prisma } from '@prisma/client';
+import { JWTAuthGuard } from 'src/auth/jwt-auth.guard';
+import { InventoryDTO } from './entities/inventory.entity';
 
+@UseGuards(JWTAuthGuard)
 @Controller('inventory')
 export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
 
   @Post()
   async create(
-    @Body() inventory: Prisma.InventoryCreateInput,
+    @Body() inventory: InventoryDTO,
+    @Req() req,
   ): Promise<Inventory> {
-    return this.inventoryService.create(inventory);
+    const userId = req.user.id;
+    return this.inventoryService.create(inventory, userId);
   }
 
   @Get()
@@ -31,6 +38,7 @@ export class InventoryController {
     return this.inventoryService.findOne(+id);
   }
 
+  // not needed
   @Patch(':id')
   async update(
     @Param('id') id: string,
