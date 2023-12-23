@@ -10,30 +10,27 @@ export class OrderService {
     return this.prisma.order.create({ data });
   }
 
-  // create order with order details
-  async createWithDetails(data: Prisma.OrderCreateInput, orderDetails: Prisma.OrderDetailCreateInput[]): Promise<Order> {
-    const order = await this.prisma.order.create({ data });
-    orderDetails.forEach(async (orderDetail: Prisma.OrderDetailCreateInput) => {
-      await this.prisma.orderDetail.create({ data: { ...orderDetail} as Prisma.OrderDetailCreateInput });
+  async createOrderWithDetails(orderData: Prisma.OrderCreateInput, orderDetails: Prisma.OrderDetailUncheckedCreateInput[]): Promise<Order> {
+    return this.prisma.$transaction(async (prisma) => {
+      // Create the order with nested order details
+      const order = await prisma.order.create({
+        data: {
+          ...orderData,
+          OrderDetail: {
+            create: orderDetails.map(detail => ({
+              productId: detail.productId,
+              quantity: detail.quantity,
+              price: detail.price,
+              unitId: detail.unitId
+              // No need to include `order` or `orderId` here as it's handled by the nested write
+            })),
+          },
+        },
+      });
+  
+      return order;
     });
-    return order;
-    //expample of json received by this method
-
-    // {
-    //   "data": {
-    //     "date": "2021-10-01T00:00:00.000Z",
-    //     "status": "PENDING",
-    //     "userId": 1,
-    //     "orderDetails": [
-    //       {
-    //         "productId": 1,
-    //         "quantity": 1
-    //       },
-    //       {
-    //         "productId": 2,
-    //         "quantity": 1
-
-  }
+  }  
 
   async findAll(): Promise<Order[]> {
     return this.prisma.order.findMany();
