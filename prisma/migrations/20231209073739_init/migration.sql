@@ -91,6 +91,7 @@ CREATE TABLE "Order" (
     "id" SERIAL NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "location" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "wholesale" BOOLEAN NOT NULL,
     "status" TEXT NOT NULL,
     "total" DOUBLE PRECISION NOT NULL,

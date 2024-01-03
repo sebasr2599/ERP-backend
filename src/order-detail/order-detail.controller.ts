@@ -21,6 +21,11 @@ export class OrderDetailController {
     return this.orderDetailService.findOne(+id);
   }
 
+  @Get('order/:orderId')
+  async findAllByOrderId(@Param('orderId') orderId: string): Promise<OrderDetail[]> {
+    return this.orderDetailService.findallByOrderId(+orderId);
+  }
+
   @Patch(':id')
   async update(@Param('id') id: string, @Body() data: Prisma.OrderDetailUpdateInput): Promise<OrderDetail> {
     return this.orderDetailService.update(+id, data);
