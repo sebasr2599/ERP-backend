@@ -22,6 +22,7 @@ export class OrderService {
               quantity: detail.quantity,
               price: detail.price,
               unitId: detail.unitId
+              //TODO UPDATE INVENTORY QUANTITY WHEN CREATING ORDER
               // No need to include `order` or `orderId` here as it's handled by the nested write
             })),
           },
