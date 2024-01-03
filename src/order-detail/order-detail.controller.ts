@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { OrderDetailService } from './order-detail.service';
 import { OrderDetail, Prisma } from '@prisma/client';
 
@@ -7,7 +15,9 @@ export class OrderDetailController {
   constructor(private readonly orderDetailService: OrderDetailService) {}
 
   @Post()
-  async create(@Body() data: Prisma.OrderDetailCreateInput): Promise<OrderDetail> {
+  async create(
+    @Body() data: Prisma.OrderDetailCreateInput,
+  ): Promise<OrderDetail> {
     return this.orderDetailService.create(data);
   }
 
@@ -22,7 +32,10 @@ export class OrderDetailController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() data: Prisma.OrderDetailUpdateInput): Promise<OrderDetail> {
+  async update(
+    @Param('id') id: string,
+    @Body() data: Prisma.OrderDetailUpdateInput,
+  ): Promise<OrderDetail> {
     return this.orderDetailService.update(+id, data);
   }
 

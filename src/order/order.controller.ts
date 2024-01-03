@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Order, Prisma } from '@prisma/client';
 
@@ -32,7 +40,10 @@ export class OrderController {
   }
 
   @Get('date/:date/user/:userId')
-  async findAllByDateAndUserId(@Param('date') date: Date, @Param('userId') userId: string): Promise<Order[]> {
+  async findAllByDateAndUserId(
+    @Param('date') date: Date,
+    @Param('userId') userId: string,
+  ): Promise<Order[]> {
     return this.orderService.findallByDateAndUserId(date, +userId);
   }
 
@@ -42,10 +53,13 @@ export class OrderController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() data: Prisma.OrderUpdateInput): Promise<Order> {
+  async update(
+    @Param('id') id: string,
+    @Body() data: Prisma.OrderUpdateInput,
+  ): Promise<Order> {
     return this.orderService.update(+id, data);
   }
-  
+
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<Order> {
     return this.orderService.remove(+id);

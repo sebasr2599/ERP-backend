@@ -22,7 +22,10 @@ export class OrderDetailService {
     return this.prisma.orderDetail.findUnique({ where: { id } });
   }
 
-  async update(id: number, data: Prisma.OrderDetailUpdateInput): Promise<OrderDetail> {
+  async update(
+    id: number,
+    data: Prisma.OrderDetailUpdateInput,
+  ): Promise<OrderDetail> {
     return this.prisma.orderDetail.update({ where: { id }, data });
   }
 
