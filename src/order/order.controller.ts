@@ -21,12 +21,16 @@ export class OrderController {
 
   @Post('withDetails')
   async createOrderWithDetails(
-    @Body() createOrderDto: { 
-      orderData: Prisma.OrderCreateInput, 
-      orderDetails: Prisma.OrderDetailUncheckedCreateInput[] 
-    }
+    @Body()
+    createOrderDto: {
+      orderData: Prisma.OrderCreateInput;
+      orderDetails: Prisma.OrderDetailUncheckedCreateInput[];
+    },
   ): Promise<Order> {
-    return this.orderService.createOrderWithDetails(createOrderDto.orderData, createOrderDto.orderDetails);
+    return this.orderService.createOrderWithDetails(
+      createOrderDto.orderData,
+      createOrderDto.orderDetails,
+    );
   }
 
   @Get()

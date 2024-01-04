@@ -21,7 +21,7 @@ export class OrderDetailService {
       include: { product: { include: { unit: true } } },
     });
   }
-  
+
   async findOne(id: number): Promise<OrderDetail> {
     return this.prisma.orderDetail.findUnique({ where: { id } });
   }

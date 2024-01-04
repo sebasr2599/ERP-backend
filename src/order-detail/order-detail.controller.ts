@@ -32,7 +32,9 @@ export class OrderDetailController {
   }
 
   @Get('order/:orderId')
-  async findAllByOrderId(@Param('orderId') orderId: string): Promise<OrderDetail[]> {
+  async findAllByOrderId(
+    @Param('orderId') orderId: string,
+  ): Promise<OrderDetail[]> {
     return this.orderDetailService.findallByOrderId(+orderId);
   }
 
