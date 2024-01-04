@@ -19,6 +19,16 @@ export class OrderController {
     return this.orderService.create(data);
   }
 
+  @Post('withDetails')
+  async createOrderWithDetails(
+    @Body() createOrderDto: { 
+      orderData: Prisma.OrderCreateInput, 
+      orderDetails: Prisma.OrderDetailUncheckedCreateInput[] 
+    }
+  ): Promise<Order> {
+    return this.orderService.createOrderWithDetails(createOrderDto.orderData, createOrderDto.orderDetails);
+  }
+
   @Get()
   async findAll(): Promise<Order[]> {
     return this.orderService.findAll();

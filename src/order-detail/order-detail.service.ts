@@ -14,10 +14,14 @@ export class OrderDetailService {
     return this.prisma.orderDetail.findMany();
   }
 
+  // find all order details by order id including product name and unit name
   async findallByOrderId(orderId: number): Promise<OrderDetail[]> {
-    return this.prisma.orderDetail.findMany({ where: { orderId } });
+    return this.prisma.orderDetail.findMany({
+      where: { orderId },
+      include: { product: { include: { unit: true } } },
+    });
   }
-
+  
   async findOne(id: number): Promise<OrderDetail> {
     return this.prisma.orderDetail.findUnique({ where: { id } });
   }
