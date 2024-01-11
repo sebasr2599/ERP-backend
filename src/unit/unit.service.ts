@@ -11,22 +11,11 @@ export class UnitService {
   }
 
   async findAll(): Promise<Partial<Unit>[]> {
-    return await this.prisma.unit.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
-    });
+    return await this.prisma.unit.findMany();
   }
 
   async findOne(id: number): Promise<Partial<Unit>> {
-    return await this.prisma.unit.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
+    return await this.prisma.unit.findUnique({ where: { id } });
   }
 
   async update(id: number, unit: Prisma.UnitUpdateInput): Promise<Unit> {

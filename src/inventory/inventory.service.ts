@@ -17,30 +17,11 @@ export class InventoryService {
   }
   
   async findAll(): Promise<Partial<Inventory>[]> {
-    return await this.prisma.inventory.findMany({
-      select: {
-        id: true,
-        quantity: true,
-        date: true,
-        location: true,
-        productId: true,
-        userId: true,
-      },
-    });
+    return await this.prisma.inventory.findMany();
   }
 
   async findOne(id: number): Promise<Partial<Inventory>> {
-    return await this.prisma.inventory.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        quantity: true,
-        date: true,
-        location: true,
-        productId: true,
-        userId: true,
-      },
-    });
+    return await this.prisma.inventory.findUnique({ where: { id } });
   }
 
   async update(id: number, data: Prisma.InventoryUpdateInput): Promise<Inventory> {

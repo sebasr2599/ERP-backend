@@ -29,8 +29,8 @@ export class ProductController {
 
   //get product and its category and unit
   @Get(':id/details')
-  async findOneWithCategoryAndUnit(@Param('id') id: string): Promise<Product> {
-    return this.productService.findOneWithCategoryAndUnit(+id);
+  async getProductWithDetails(@Param('id') id: string): Promise<Product> {
+    return this.productService.getProductWithDetails(+id);
   }
 
   @Patch(':id')
