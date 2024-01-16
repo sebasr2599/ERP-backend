@@ -10,6 +10,19 @@ export class ProductService {
     return await this.prisma.product.create({ data: product });
   }
 
+  async createWithDetails(productData: Prisma.ProductCreateInput, equivalentUnitData: Prisma.EquivalentUnitUncheckedCreateInput[]): Promise<Product> {
+    return await this.prisma.product.create({
+      data: {
+        ...productData,
+        EquivalentUnit: {
+          createMany: {
+            data: equivalentUnitData
+          }
+        }
+      }
+    });
+  }
+
   async findAll(): Promise<Product[]> {
     return await this.prisma.product.findMany();
   }

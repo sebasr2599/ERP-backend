@@ -11,6 +11,16 @@ export class ProductController {
     return this.productService.create(product);
   }
 
+  @Post('withDetails')
+  async createWithDetails(
+    @Body() createProductDto: { 
+      product: Prisma.ProductCreateInput, 
+      equivalentUnits: Prisma.EquivalentUnitUncheckedCreateInput[] 
+    }
+  ): Promise<Product> {
+    return this.productService.createWithDetails(createProductDto.product, createProductDto.equivalentUnits);
+  }
+
   @Get()
   async findAll(): Promise<Product[]> {
     return this.productService.findAll();
