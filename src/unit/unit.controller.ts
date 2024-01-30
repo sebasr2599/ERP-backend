@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { UnitService } from './unit.service';
 import { Unit, Prisma } from '@prisma/client';
 
@@ -22,7 +30,10 @@ export class UnitController {
   }
 
   @Patch(':id')
-  async update( @Param('id') id: string, @Body() unit: Partial<Prisma.UnitUpdateInput>): Promise<Unit> {
+  async update(
+    @Param('id') id: string,
+    @Body() unit: Partial<Prisma.UnitUpdateInput>,
+  ): Promise<Unit> {
     return this.unitService.update(+id, unit);
   }
 

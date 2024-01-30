@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma.service';
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
-
+  // TODO: Remove Partials and improve selects, you can find the docs here https://www.prisma.io/client
   async create(product: Prisma.ProductCreateInput) {
     return await this.prisma.product.create({ data: product });
   }
@@ -64,7 +64,10 @@ export class ProductService {
       }});
   }
 
-  async update(id: number, product: Prisma.ProductUpdateInput): Promise<Product> {
+  async update(
+    id: number,
+    product: Prisma.ProductUpdateInput,
+  ): Promise<Product> {
     return await this.prisma.product.update({
       where: { id },
       data: product,

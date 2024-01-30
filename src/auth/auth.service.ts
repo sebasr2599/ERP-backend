@@ -21,9 +21,14 @@ export class AuthService {
     return result;
   }
 
+  // get the user from the token id
+  async getUser(id: number): Promise<Partial<User>> {
+    return await this.userService.findOne(id);
+  }
+
   // used in controller
   async loginJWT(id: number, username: string) {
-    const payload = { sub: id, username: username };
+    const payload = { id: id, username: username };
     return await this.jwtService.signAsync(payload);
   }
 
