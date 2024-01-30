@@ -19,6 +19,16 @@ export class ProductController {
     return this.productService.create(product);
   }
 
+  @Post('withDetails')
+  async createWithDetails(
+    @Body() createProductDto: { 
+      product: Prisma.ProductCreateInput, 
+      equivalentUnits: Prisma.EquivalentUnitUncheckedCreateInput[] 
+    }
+  ): Promise<Product> {
+    return this.productService.createWithDetails(createProductDto.product, createProductDto.equivalentUnits);
+  }
+
   @Get()
   async findAll(): Promise<Product[]> {
     return this.productService.findAll();
@@ -37,8 +47,8 @@ export class ProductController {
 
   //get product and its category and unit
   @Get(':id/details')
-  async findOneWithCategoryAndUnit(@Param('id') id: string): Promise<Product> {
-    return this.productService.findOneWithCategoryAndUnit(+id);
+  async getProductWithDetails(@Param('id') id: string): Promise<Product> {
+    return this.productService.getProductWithDetails(+id);
   }
 
   @Patch(':id')
