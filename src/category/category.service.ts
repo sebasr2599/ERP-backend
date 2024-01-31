@@ -11,25 +11,17 @@ export class CategoryService {
   }
 
   async findAll(): Promise<Partial<Category>[]> {
-    return await this.prisma.category.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
-    });
+    return await this.prisma.category.findMany();
   }
 
   async findOne(id: number): Promise<Partial<Category>> {
-    return await this.prisma.category.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
+    return await this.prisma.category.findUnique({ where: { id } });
   }
 
-  async update(id: number, category: Prisma.CategoryUpdateInput): Promise<Category> {
+  async update(
+    id: number,
+    category: Prisma.CategoryUpdateInput,
+  ): Promise<Category> {
     return await this.prisma.category.update({
       where: { id },
       data: category,

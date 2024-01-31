@@ -10,26 +10,25 @@ export class ProductService {
     return await this.prisma.product.create({ data: product });
   }
 
-  async findAll(): Promise<Product[]> {
-    return await this.prisma.product.findMany({
-      include: { category: true, unit: true },
+  async createWithDetails(productData: Prisma.ProductCreateInput, equivalentUnitData: Prisma.EquivalentUnitUncheckedCreateInput[]): Promise<Product> {
+    return await this.prisma.product.create({
+      data: {
+        ...productData,
+        EquivalentUnit: {
+          createMany: {
+            data: equivalentUnitData
+          }
+        }
+      }
     });
   }
 
+  async findAll(): Promise<Product[]> {
+    return await this.prisma.product.findMany();
+  }
+
   async findOne(id: number): Promise<Product> {
-    return await this.prisma.product.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        priceUnit: true,
-        priceWholesale: true,
-        categoryId: true,
-        unitId: true,
-        image: true,
-      },
-    });
+    return await this.prisma.product.findUnique({where: { id }});
   }
 
   //return product with category and unit
@@ -43,6 +42,17 @@ export class ProductService {
     });
   }
 
+  async getProductWithDetails(productId: number): Promise<Product | null> {
+    return this.prisma.product.findUnique({
+      where: { id: productId },
+      include: {
+        category: true,        // Include category
+        unit: true,            // Include unit
+        EquivalentUnit: true   // Include equivalent units
+      }
+    });
+  }
+
   //find by name but name doesnt have to exactly match
   async findByName(name: string): Promise<Product[]> {
     return await this.prisma.product.findMany({
@@ -51,18 +61,7 @@ export class ProductService {
           contains: name,
           mode: 'insensitive',
         },
-      },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        priceUnit: true,
-        priceWholesale: true,
-        categoryId: true,
-        unitId: true,
-        image: true,
-      },
-    });
+      }});
   }
 
   async update(

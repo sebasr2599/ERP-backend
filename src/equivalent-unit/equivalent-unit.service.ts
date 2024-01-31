@@ -6,48 +6,32 @@ import { PrismaService } from '../prisma.service';
 export class EquivalentUnitService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.EquivalentUnitCreateInput): Promise<EquivalentUnit> {
+  async create(
+    data: Prisma.EquivalentUnitCreateInput,
+  ): Promise<EquivalentUnit> {
     return await this.prisma.equivalentUnit.create({
       data,
     });
   }
 
   async findAll(): Promise<Partial<EquivalentUnit>[]> {
-    return await this.prisma.equivalentUnit.findMany({
-      select: {
-        id: true,
-        equivalent: true,
-        productId: true,
-        unitId: true,
-      },
-    });
+    return await this.prisma.equivalentUnit.findMany();
   }
 
   async findOne(id: number): Promise<Partial<EquivalentUnit>> {
-    return await this.prisma.equivalentUnit.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        equivalent: true,
-        productId: true,
-        unitId: true,
-      },
-    });
+    return await this.prisma.equivalentUnit.findUnique({ where: { id } });
   }
 
-  async findAllByProductId(productId: number): Promise<Partial<EquivalentUnit>[]> {
-    return await this.prisma.equivalentUnit.findMany({
-      where: { productId },
-      select: {
-        id: true,
-        equivalent: true,
-        productId: true,
-        unitId: true,
-      },
-    });
+  async findAllByProductId(
+    productId: number,
+  ): Promise<Partial<EquivalentUnit>[]> {
+    return await this.prisma.equivalentUnit.findMany({ where: { productId } });
   }
 
-  async update(id: number, data: Prisma.EquivalentUnitUpdateInput): Promise<EquivalentUnit> {
+  async update(
+    id: number,
+    data: Prisma.EquivalentUnitUpdateInput,
+  ): Promise<EquivalentUnit> {
     return await this.prisma.equivalentUnit.update({
       where: { id },
       data,
