@@ -1,25 +1,42 @@
 import { Injectable } from '@nestjs/common';
 import { Product, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
+import { createProductDto } from './dto/createProduct.dto';
 
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
   // TODO: Remove Partials and improve selects, you can find the docs here https://www.prisma.io/client
-  async create(product: Prisma.ProductCreateInput) {
-    return await this.prisma.product.create({ data: product });
+  async create(product: createProductDto) {
+    const equivalencies = product.equivalentUnits;
+    delete product.equivalentUnits;
+    console.log(`equivalencies: ${equivalencies}`);
+    console.log(`product: ${product}`);
+    return await this.prisma.product.create({
+      data: {
+        ...product,
+        EquivalentUnit: {
+          createMany: {
+            data: equivalencies,
+          },
+        },
+      },
+    });
   }
 
-  async createWithDetails(productData: Prisma.ProductCreateInput, equivalentUnitData: Prisma.EquivalentUnitUncheckedCreateInput[]): Promise<Product> {
+  async createWithDetails(
+    productData: Prisma.ProductCreateInput,
+    equivalentUnitData: Prisma.EquivalentUnitUncheckedCreateInput[],
+  ): Promise<Product> {
     return await this.prisma.product.create({
       data: {
         ...productData,
         EquivalentUnit: {
           createMany: {
-            data: equivalentUnitData
-          }
-        }
-      }
+            data: equivalentUnitData,
+          },
+        },
+      },
     });
   }
 
@@ -28,7 +45,7 @@ export class ProductService {
   }
 
   async findOne(id: number): Promise<Product> {
-    return await this.prisma.product.findUnique({where: { id }});
+    return await this.prisma.product.findUnique({ where: { id } });
   }
 
   //return product with category and unit
@@ -46,10 +63,10 @@ export class ProductService {
     return this.prisma.product.findUnique({
       where: { id: productId },
       include: {
-        category: true,        // Include category
-        unit: true,            // Include unit
-        EquivalentUnit: true   // Include equivalent units
-      }
+        category: true, // Include category
+        unit: true, // Include unit
+        EquivalentUnit: true, // Include equivalent units
+      },
     });
   }
 
@@ -61,7 +78,8 @@ export class ProductService {
           contains: name,
           mode: 'insensitive',
         },
-      }});
+      },
+    });
   }
 
   async update(

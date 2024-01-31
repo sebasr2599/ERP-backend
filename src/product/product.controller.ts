@@ -9,24 +9,29 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product, Prisma } from '@prisma/client';
+import { createProductDto } from './dto/createProduct.dto';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  async create(@Body() product: Prisma.ProductCreateInput): Promise<Product> {
+  async create(@Body() product: createProductDto): Promise<Product> {
     return this.productService.create(product);
   }
 
   @Post('withDetails')
   async createWithDetails(
-    @Body() createProductDto: { 
-      product: Prisma.ProductCreateInput, 
-      equivalentUnits: Prisma.EquivalentUnitUncheckedCreateInput[] 
-    }
+    @Body()
+    createProductDto: {
+      product: Prisma.ProductCreateInput;
+      equivalentUnits: Prisma.EquivalentUnitUncheckedCreateInput[];
+    },
   ): Promise<Product> {
-    return this.productService.createWithDetails(createProductDto.product, createProductDto.equivalentUnits);
+    return this.productService.createWithDetails(
+      createProductDto.product,
+      createProductDto.equivalentUnits,
+    );
   }
 
   @Get()
