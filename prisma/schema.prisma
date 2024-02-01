@@ -50,7 +50,7 @@ model Product {
   unitId             Int
   Inventory          Inventory[]
   HistoricPrice      HistoricPrice[]
-  EquivalentUnit     EquivalentUnit[]
+  equivalentUnits    EquivalentUnit[]
   HistoricEquivalent HistoricEquivalent[]
   OrderDetail        OrderDetail[]
   categoryId         Int
@@ -100,16 +100,16 @@ model HistoricEquivalent {
 }
 
 model Order {
-  id          Int           @id @default(autoincrement())
-  date        DateTime
-  user        User          @relation(fields: [userId], references: [id])
-  location    String
-  name       String
-  wholesale   Boolean
-  status      String
-  total       Float
-  userId      Int
-  OrderDetail OrderDetail[]
+  id           Int           @id @default(autoincrement())
+  date         DateTime
+  user         User          @relation(fields: [userId], references: [id])
+  location     String
+  name         String
+  wholesale    Boolean
+  status       String
+  total        Float
+  userId       Int
+  orderDetails OrderDetail[]
 }
 
 model OrderDetail {

@@ -19,7 +19,7 @@ export class OrderService {
       const order = await prisma.order.create({
         data: {
           ...orderData,
-          OrderDetail: {
+          orderDetails: {
             create: orderDetails.map((detail) => ({
               productId: detail.productId,
               quantity: detail.quantity,

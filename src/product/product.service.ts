@@ -15,7 +15,7 @@ export class ProductService {
     return await this.prisma.product.create({
       data: {
         ...product,
-        EquivalentUnit: {
+        equivalentUnits: {
           createMany: {
             data: equivalencies,
           },
@@ -31,7 +31,7 @@ export class ProductService {
     return await this.prisma.product.create({
       data: {
         ...productData,
-        EquivalentUnit: {
+        equivalentUnits: {
           createMany: {
             data: equivalentUnitData,
           },
@@ -41,7 +41,17 @@ export class ProductService {
   }
 
   async findAll(): Promise<Product[]> {
-    return await this.prisma.product.findMany();
+    return await this.prisma.product.findMany({
+      include: {
+        category: true,
+        unit: true, // Include unit
+        equivalentUnits: {
+          include: {
+            unit: true,
+          },
+        },
+      },
+    });
   }
 
   async findOne(id: number): Promise<Product> {
@@ -65,7 +75,7 @@ export class ProductService {
       include: {
         category: true, // Include category
         unit: true, // Include unit
-        EquivalentUnit: true, // Include equivalent units
+        equivalentUnits: true, // Include equivalent units
       },
     });
   }
