@@ -1,13 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { Order, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
+import { createOrderDto } from './dto/createOrderDto.dto';
 
 @Injectable()
 export class OrderService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.OrderCreateInput): Promise<Order> {
-    return this.prisma.order.create({ data });
+  async create(data: createOrderDto, userId: number): Promise<Order> {
+    const date = new Date(Date.now());
+    data.date = date;
+    data.userId = userId;
+    const orderDetails = data.orderDetails;
+    delete data.orderDetails;
+    console.log(data, date, userId);
+    console.log(orderDetails);
+    return await this.prisma.order.create({
+      data: {
+        ...data,
+        orderDetails: {
+          createMany: {
+            data: orderDetails,
+          },
+        },
+      },
+    });
   }
   // TODO: Get the user id from token and date from server.
   async createOrderWithDetails(

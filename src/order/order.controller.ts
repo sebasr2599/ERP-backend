@@ -6,17 +6,23 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Order, Prisma } from '@prisma/client';
+import { JWTAuthGuard } from 'src/auth/jwt-auth.guard';
+import { createOrderDto } from './dto/createOrderDto.dto';
 
 @Controller('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
+  @UseGuards(JWTAuthGuard)
   @Post()
-  async create(@Body() data: Prisma.OrderCreateInput): Promise<Order> {
-    return this.orderService.create(data);
+  async create(@Body() data: createOrderDto, @Req() req): Promise<Order> {
+    const userId = req.user.id;
+    return this.orderService.create(data, userId);
   }
 
   @Post('withDetails')
