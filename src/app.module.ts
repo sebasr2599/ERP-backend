@@ -11,8 +11,9 @@ import { EquivalentUnitModule } from './equivalent-unit/equivalent-unit.module';
 import { HistoricEquivalentModule } from './historic-equivalent/historic-equivalent.module';
 import { OrderModule } from './order/order.module';
 import { OrderDetailModule } from './order-detail/order-detail.module';
+import { ClientModule } from './client/client.module';
 
 @Module({
-  imports: [AuthModule, UserModule, PassportModule, CategoryModule, UnitModule, ProductModule, InventoryModule, HistoricPriceModule, EquivalentUnitModule, HistoricEquivalentModule, OrderModule, OrderDetailModule],
+  imports: [AuthModule, UserModule, PassportModule, CategoryModule, UnitModule, ProductModule, InventoryModule, HistoricPriceModule, EquivalentUnitModule, HistoricEquivalentModule, OrderModule, OrderDetailModule, ClientModule],
 })
 export class AppModule {}

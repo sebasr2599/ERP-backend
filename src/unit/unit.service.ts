@@ -14,7 +14,7 @@ export class UnitService {
     return await this.prisma.unit.findMany();
   }
 
-  async findOne(id: number): Promise<Partial<Unit>> {
+  async findOne(id: number): Promise<Unit> {
     return await this.prisma.unit.findUnique({ where: { id } });
   }
 

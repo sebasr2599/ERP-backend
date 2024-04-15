@@ -38,12 +38,18 @@ model Unit {
   OrderDetail        OrderDetail[]
 }
 
+model Client {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  Order Order[]
+}
+
 model Product {
   id                 Int                  @id @default(autoincrement())
   name               String               @unique
   description        String
   priceUnit          Float
-  priceWholesale     Float
+  // priceWholesale     Float
   category           Category             @relation(fields: [categoryId], references: [id])
   unit               Unit                 @relation(fields: [unitId], references: [id])
   image              String
@@ -68,14 +74,14 @@ model Inventory {
 }
 
 model HistoricPrice {
-  id             Int      @id @default(autoincrement())
-  product        Product  @relation(fields: [productId], references: [id])
-  priceUnit      Float
-  priceWholesale Float
-  date           DateTime
-  user           User     @relation(fields: [userId], references: [id])
-  productId      Int
-  userId         Int
+  id        Int      @id @default(autoincrement())
+  product   Product  @relation(fields: [productId], references: [id])
+  priceUnit Float
+  // priceWholesale Float
+  date      DateTime
+  user      User     @relation(fields: [userId], references: [id])
+  productId Int
+  userId    Int
 }
 
 model EquivalentUnit {
@@ -103,13 +109,15 @@ model Order {
   id           Int           @id @default(autoincrement())
   date         DateTime
   user         User          @relation(fields: [userId], references: [id])
-  location     String
+  // location     String
   name         String
-  wholesale    Boolean
+  // wholesale    Boolean
   status       String
   total        Float
   userId       Int
+  clientId     Int?
   orderDetails OrderDetail[]
+  Client       Client?       @relation(fields: [clientId], references: [id])
 }
 
 model OrderDetail {
