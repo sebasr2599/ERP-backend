@@ -12,8 +12,23 @@ import { HistoricEquivalentModule } from './historic-equivalent/historic-equival
 import { OrderModule } from './order/order.module';
 import { OrderDetailModule } from './order-detail/order-detail.module';
 import { ClientModule } from './client/client.module';
+// import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
-  imports: [AuthModule, UserModule, PassportModule, CategoryModule, UnitModule, ProductModule, InventoryModule, HistoricPriceModule, EquivalentUnitModule, HistoricEquivalentModule, OrderModule, OrderDetailModule, ClientModule],
+  imports: [
+    AuthModule,
+    UserModule,
+    PassportModule,
+    CategoryModule,
+    UnitModule,
+    ProductModule,
+    InventoryModule,
+    HistoricPriceModule,
+    EquivalentUnitModule,
+    HistoricEquivalentModule,
+    OrderModule,
+    OrderDetailModule,
+    ClientModule,
+  ],
 })
 export class AppModule {}
