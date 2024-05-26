@@ -12,10 +12,17 @@ import { HistoricEquivalentModule } from './historic-equivalent/historic-equival
 import { OrderModule } from './order/order.module';
 import { OrderDetailModule } from './order-detail/order-detail.module';
 import { ClientModule } from './client/client.module';
-// import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 5000,
+        limit: 30,
+      },
+    ]),
     AuthModule,
     UserModule,
     PassportModule,
@@ -29,6 +36,12 @@ import { ClientModule } from './client/client.module';
     OrderModule,
     OrderDetailModule,
     ClientModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}
