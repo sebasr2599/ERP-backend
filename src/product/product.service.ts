@@ -50,13 +50,48 @@ export class ProductService {
       },
       include: {
         category: true,
-        unit: true, // Include unit
+        unit: true,
         equivalentUnits: {
           include: {
             unit: true,
           },
         },
       },
+      orderBy: [
+        {
+          category: {
+            name: 'asc',
+          },
+        },
+        {
+          name: 'asc',
+        },
+      ],
+      // where: {
+      //   name: {
+      //     contains: productName,
+      //     mode: 'insensitive',
+      //   },
+      // },
+      // // orderBy: [
+      // //   {
+      // //     name: 'asc',
+      // //   },
+      // // ],
+      // orderBy: {
+      //   category: {
+      //     name: 'asc',
+      //   },
+      // },
+      // include: {
+      //   category: true,
+      //   unit: true,
+      //   equivalentUnits: {
+      //     include: {
+      //       unit: true,
+      //     },
+      //   },
+      // },
     });
   }
 
