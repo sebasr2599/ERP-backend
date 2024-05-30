@@ -40,8 +40,14 @@ export class ProductService {
     });
   }
 
-  async findAll(): Promise<Product[]> {
+  async findAll(productName: string): Promise<Product[]> {
     return await this.prisma.product.findMany({
+      where: {
+        name: {
+          contains: productName,
+          mode: 'insensitive',
+        },
+      },
       include: {
         category: true,
         unit: true, // Include unit
