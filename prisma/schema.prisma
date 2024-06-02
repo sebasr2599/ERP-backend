@@ -68,7 +68,7 @@ model Inventory {
   quantity  Float
   date      DateTime
   user      User     @relation(fields: [userId], references: [id])
-  location  String
+  // location  String
   productId Int
   userId    Int
 }
