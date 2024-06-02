@@ -36,8 +36,11 @@ export class ProductController {
   }
 
   @Get()
-  async findAll(@Query('search') productName): Promise<Product[]> {
-    return this.productService.findAll(productName);
+  async findAll(
+    @Query('search') productName,
+    @Query('categoryId') categoryId: string,
+  ): Promise<Product[]> {
+    return this.productService.findAll(productName, categoryId);
   }
 
   @Get(':id')
