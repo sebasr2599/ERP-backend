@@ -42,7 +42,10 @@ export class ProductService {
 
   async findAll(productName: string, categoryId: string): Promise<Product[]> {
     const parsedCategoryId =
-      categoryId !== ('null' || 'undefined') ? parseInt(categoryId) : undefined;
+      categoryId !== 'null' && categoryId !== 'undefined'
+        ? parseInt(categoryId)
+        : undefined;
+    console.log(categoryId, parsedCategoryId);
     return await this.prisma.product.findMany({
       where: {
         name: {
