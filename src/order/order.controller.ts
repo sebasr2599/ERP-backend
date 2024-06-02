@@ -44,6 +44,11 @@ export class OrderController {
     return this.orderService.findAll();
   }
 
+  @Get('pending')
+  async findAllPending(): Promise<Order[]> {
+    return this.orderService.findAllPending();
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Order> {
     return this.orderService.findOne(+id);

@@ -57,6 +57,18 @@ export class OrderService {
     return this.prisma.order.findMany();
   }
 
+  async findAllPending(): Promise<Order[]> {
+    // find all orders with status 'PENDING' or 'BLOCKED'
+    return this.prisma.order.findMany({
+      where: {
+        OR: [
+          { status: 'PENDING' },
+          { status: 'BLOCKED' },
+        ],
+      },
+    });
+  }
+
   async findOne(id: number): Promise<Order> {
     return this.prisma.order.findUnique({ where: { id } });
   }
@@ -96,23 +108,65 @@ export class OrderService {
     const orderDetails = await this.prisma.orderDetail.findMany({
       where: { orderId: id },
     });
+  
     // Update inventory based on order details
-    orderDetails.forEach(async (orderDetail) => {
-      const inventory = await this.prisma.inventory.findUnique({
+    for (const orderDetail of orderDetails) {
+      // Find the product and its unit
+      const product = await this.prisma.product.findUnique({
         where: { id: orderDetail.productId },
+        include: { unit: true },
       });
-      const newQuantity = inventory.quantity - orderDetail.quantity;
+  
+      if (!product) {
+        throw new Error(`Product ID ${orderDetail.productId} not found`);
+      }
+  
+      // Determine the quantity to subtract, considering unit conversions if necessary
+      let quantityToSubtract = orderDetail.quantity;
+      
+      if (product.unitId !== orderDetail.unitId) {
+        // Find the equivalent unit conversion
+        const equivalentUnit = await this.prisma.equivalentUnit.findFirst({
+          where: {
+            productId: product.id,
+            unitId: orderDetail.unitId,
+          },
+        });
+  
+        if (!equivalentUnit) {
+          throw new Error(`No equivalent unit found for product ID ${orderDetail.productId} and unit ID ${orderDetail.unitId}`);
+        }
+  
+        // Convert the order detail quantity to the product's unit
+        quantityToSubtract *= equivalentUnit.equivalent;
+      }
+  
+      // Find the inventory record for the specific product
+      const inventory = await this.prisma.inventory.findFirst({
+        where: { productId: product.id },
+      });
+  
+      if (!inventory) {
+        throw new Error(`Inventory for product ID ${product.id} not found`);
+      }
+  
+      // Calculate the new quantity
+      const newQuantity = inventory.quantity - quantityToSubtract;
+  
+      // Update the inventory record
       await this.prisma.inventory.update({
-        where: { id: orderDetail.productId },
+        where: { id: inventory.id },
         data: { quantity: newQuantity },
       });
-    });
+    }
+  
+    // Update the order status to 'RELEASED'
     return this.prisma.order.update({
       where: { id },
       data: { status: 'RELEASED' },
     });
-  }
-
+  }  
+  
   //create an async function to delete and order and its details
   async deleteWithDetails(id: number): Promise<Order> {
     //delete order details
