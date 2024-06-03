@@ -53,8 +53,31 @@ export class OrderService {
     });
   }
 
-  async findAll(): Promise<Order[]> {
-    return this.prisma.order.findMany();
+  async findAll(recent: string): Promise<Order[]> {
+    let statusFilter = {};
+    const recentStatus = recent === 'true';
+    if (recentStatus) {
+      statusFilter = {
+        status: {
+          in: ['Pending', 'Blocked'],
+        },
+      };
+    }
+    return this.prisma.order.findMany({
+      where: statusFilter,
+      include: {
+        Client: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+            first_name: true,
+            last_name: true,
+          },
+        },
+      },
+      orderBy: { date: 'desc' },
+    });
   }
 
   async findAllPending(): Promise<Order[]> {
@@ -67,7 +90,26 @@ export class OrderService {
   }
 
   async findOne(id: number): Promise<Order> {
-    return this.prisma.order.findUnique({ where: { id } });
+    return this.prisma.order.findUnique({
+      where: { id },
+      include: {
+        Client: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+            first_name: true,
+            last_name: true,
+          },
+        },
+        orderDetails: {
+          include: {
+            product: true,
+            unit: true,
+          },
+        },
+      },
+    });
   }
 
   async findallByUserId(userId: number): Promise<Order[]> {
@@ -176,6 +218,12 @@ export class OrderService {
 
   async update(id: number, data: Prisma.OrderUpdateInput): Promise<Order> {
     return this.prisma.order.update({ where: { id }, data });
+  }
+  async updateStatus(id: number, status: string): Promise<Order> {
+    return await this.prisma.order.update({
+      where: { id },
+      data: { status: status },
+    });
   }
 
   async remove(id: number): Promise<Order> {

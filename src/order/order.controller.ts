@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Order, Prisma } from '@prisma/client';
@@ -41,8 +42,8 @@ export class OrderController {
   }
 
   @Get()
-  async findAll(): Promise<Order[]> {
-    return this.orderService.findAll();
+  async findAll(@Query('recent') recent): Promise<Order[]> {
+    return this.orderService.findAll(recent);
   }
 
   @Get('pending')
@@ -84,6 +85,13 @@ export class OrderController {
     @Body() data: Prisma.OrderUpdateInput,
   ): Promise<Order> {
     return this.orderService.update(+id, data);
+  }
+  @Patch(':id/status')
+  async updateStatus(
+    @Param('id') id: string,
+    @Query('status') status,
+  ): Promise<Order> {
+    return this.orderService.updateStatus(+id, status);
   }
 
   @Delete(':id')
