@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product, Prisma } from '@prisma/client';
@@ -35,8 +36,11 @@ export class ProductController {
   }
 
   @Get()
-  async findAll(): Promise<Product[]> {
-    return this.productService.findAll();
+  async findAll(
+    @Query('search') productName,
+    @Query('categoryId') categoryId: string,
+  ): Promise<Product[]> {
+    return this.productService.findAll(productName, categoryId);
   }
 
   @Get(':id')

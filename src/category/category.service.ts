@@ -11,7 +11,11 @@ export class CategoryService {
   }
 
   async findAll(): Promise<Partial<Category>[]> {
-    return await this.prisma.category.findMany();
+    return await this.prisma.category.findMany({
+      orderBy: {
+        name: 'asc',
+      },
+    });
   }
 
   async findOne(id: number): Promise<Partial<Category>> {

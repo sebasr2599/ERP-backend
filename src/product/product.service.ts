@@ -40,17 +40,43 @@ export class ProductService {
     });
   }
 
-  async findAll(): Promise<Product[]> {
+  async findAll(productName: string, categoryId: string): Promise<Product[]> {
+    const parsedCategoryId =
+      categoryId !== 'null' && categoryId !== 'undefined'
+        ? parseInt(categoryId)
+        : undefined;
+    console.log(categoryId, parsedCategoryId);
     return await this.prisma.product.findMany({
+      where: {
+        name: {
+          contains: productName,
+          mode: 'insensitive',
+        },
+        AND: [
+          {
+            categoryId: parsedCategoryId,
+          },
+        ],
+      },
       include: {
         category: true,
-        unit: true, // Include unit
+        unit: true,
         equivalentUnits: {
           include: {
             unit: true,
           },
         },
       },
+      orderBy: [
+        {
+          category: {
+            name: 'asc',
+          },
+        },
+        {
+          name: 'asc',
+        },
+      ],
     });
   }
 
