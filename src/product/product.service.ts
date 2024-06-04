@@ -10,8 +10,6 @@ export class ProductService {
   async create(product: createProductDto) {
     const equivalencies = product.equivalentUnits;
     delete product.equivalentUnits;
-    console.log(`equivalencies: ${equivalencies}`);
-    console.log(`product: ${product}`);
     return await this.prisma.product.create({
       data: {
         ...product,
@@ -45,7 +43,6 @@ export class ProductService {
       categoryId !== 'null' && categoryId !== 'undefined'
         ? parseInt(categoryId)
         : undefined;
-    console.log(categoryId, parsedCategoryId);
     return await this.prisma.product.findMany({
       where: {
         name: {

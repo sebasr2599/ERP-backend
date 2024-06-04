@@ -14,7 +14,6 @@ export class OrderService {
     const orderDetails = data.orderDetails;
     delete data.orderDetails;
     data.clientId === 1 ? (data.status = 'STARTED') : (data.status = 'BLOCKED');
-    console.log(data.clientId, data.status);
     return await this.prisma.order.create({
       data: {
         ...data,
@@ -27,7 +26,6 @@ export class OrderService {
     });
   }
 
-  // TODO: Get the user id from token and date from server.
   async createOrderWithDetails(
     orderData: Prisma.OrderCreateInput,
     orderDetails: Prisma.OrderDetailUncheckedCreateInput[],
