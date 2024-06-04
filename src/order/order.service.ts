@@ -59,7 +59,7 @@ export class OrderService {
     if (recentStatus) {
       statusFilter = {
         status: {
-          in: ['Pending', 'Blocked'],
+          in: ['PENDING', 'BLOCKED'],
         },
       };
     }
