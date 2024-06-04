@@ -23,7 +23,6 @@ export class OrderController {
   @Post()
   async create(@Body() data: createOrderDto, @Req() req): Promise<Order> {
     const userId = req.user.id;
-    console.log(userId);
     return this.orderService.create(data, userId);
   }
 

@@ -11,7 +11,6 @@ export class InventoryService {
     const date = new Date(Date.now());
     data.date = date;
     data.userId = userId;
-    console.log(data, date, userId);
     return await this.prisma.inventory.create({
       data,
     });
