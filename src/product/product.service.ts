@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Product, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
-import { createProductDto } from './dto/createProduct.dto';
+import { createProductDto, updateProductDto } from './dto/createProduct.dto';
 
 @Injectable()
 export class ProductService {
@@ -39,10 +39,14 @@ export class ProductService {
   }
 
   async findAll(productName: string, categoryId: string): Promise<Product[]> {
+    console.log(categoryId);
     const parsedCategoryId =
-      categoryId !== 'null' && categoryId !== 'undefined'
+      categoryId !== 'null' &&
+      categoryId !== 'undefined' &&
+      categoryId !== undefined
         ? parseInt(categoryId)
         : undefined;
+    console.log(parsedCategoryId);
     return await this.prisma.product.findMany({
       where: {
         name: {
@@ -115,13 +119,34 @@ export class ProductService {
     });
   }
 
-  async update(
-    id: number,
-    product: Prisma.ProductUpdateInput,
-  ): Promise<Product> {
+  async update(id: number, product: updateProductDto): Promise<Product> {
+    // console.log(product);
+    const equivalencies = product.equivalentUnits;
+    delete product.equivalentUnits;
+    // console.log(equivalencies);
+    for (const equivalency of equivalencies) {
+      await this.prisma.equivalentUnit.update({
+        where: {
+          id: equivalency.id,
+        },
+        data: {
+          equivalent: equivalency.equivalent,
+        },
+      });
+    }
+    const updateProduct: Prisma.ProductUpdateInput = {
+      ...product,
+
+      equivalentUnits: {},
+    };
     return await this.prisma.product.update({
-      where: { id },
-      data: product,
+      where: {
+        id: id,
+      },
+      data: updateProduct,
+      include: {
+        equivalentUnits: true, // Include related entities in the response if needed
+      },
     });
   }
 
