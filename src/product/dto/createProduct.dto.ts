@@ -13,3 +13,18 @@ export class orderDetailDto {
   price: number;
   unitId: number;
 }
+export class equivalentUnitDto {
+  id: number;
+  equivalent: number;
+  productId: number;
+  unitId: number;
+}
+export class updateProductDto {
+  name: string;
+  description: string;
+  priceUnit: number;
+  priceWholesale: number;
+  image: string;
+  categoryId: number;
+  equivalentUnits: equivalentUnitDto[];
+}
