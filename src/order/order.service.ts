@@ -13,7 +13,7 @@ export class OrderService {
     data.userId = userId;
     const orderDetails = data.orderDetails;
     delete data.orderDetails;
-    data.clientId === 1 ? (data.status = 'STARTED') : (data.status = 'BLOCKED');
+    data.clientId === 1 ? (data.status = 'PENDING') : (data.status = 'BLOCKED');
     return await this.prisma.order.create({
       data: {
         ...data,
