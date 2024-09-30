@@ -69,11 +69,11 @@ export class ProductService {
         },
       },
       orderBy: [
-        {
-          category: {
-            name: 'asc',
-          },
-        },
+        // {
+        //   category: {
+        //     name: 'asc',
+        //   },
+        // },
         {
           name: 'asc',
         },
