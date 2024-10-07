@@ -50,8 +50,8 @@ model Product {
   description        String
   priceUnit          Float
   // priceWholesale     Float
-  category           Category             @relation(fields: [categoryId], references: [id])
-  unit               Unit                 @relation(fields: [unitId], references: [id])
+  category           Category             @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  unit               Unit                 @relation(fields: [unitId], references: [id], onDelete: Cascade)
   image              String
   unitId             Int
   Inventory          Inventory[]
@@ -64,7 +64,7 @@ model Product {
 
 model Inventory {
   id        Int      @id @default(autoincrement())
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity  Float
   date      DateTime
   user      User     @relation(fields: [userId], references: [id])
@@ -75,7 +75,7 @@ model Inventory {
 
 model HistoricPrice {
   id        Int      @id @default(autoincrement())
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   priceUnit Float
   // priceWholesale Float
   date      DateTime
@@ -86,7 +86,7 @@ model HistoricPrice {
 
 model EquivalentUnit {
   id         Int     @id @default(autoincrement())
-  product    Product @relation(fields: [productId], references: [id])
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   unit       Unit    @relation(fields: [unitId], references: [id])
   equivalent Float
   productId  Int
@@ -95,7 +95,7 @@ model EquivalentUnit {
 
 model HistoricEquivalent {
   id         Int      @id @default(autoincrement())
-  product    Product  @relation(fields: [productId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   unit       Unit     @relation(fields: [unitId], references: [id])
   equivalent Float
   date       DateTime
@@ -123,7 +123,7 @@ model Order {
 model OrderDetail {
   id        Int     @id @default(autoincrement())
   order     Order   @relation(fields: [orderId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity  Float
   price     Float
   unit      Unit    @relation(fields: [unitId], references: [id])
