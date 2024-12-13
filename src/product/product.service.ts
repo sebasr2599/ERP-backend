@@ -38,47 +38,122 @@ export class ProductService {
     });
   }
 
-  async findAll(productName: string, categoryId: string): Promise<Product[]> {
-    console.log(categoryId);
+  // async findAll(productName: string, categoryId: string): Promise<Product[]> {
+  //   const parsedCategoryId =
+  //     categoryId !== 'null' &&
+  //     categoryId !== 'undefined' &&
+  //     categoryId !== undefined
+  //       ? parseInt(categoryId)
+  //       : undefined;
+  //   console.log(parsedCategoryId);
+  //   return await this.prisma.product.findMany({
+  //     where: {
+  //       name: {
+  //         contains: productName,
+  //         mode: 'insensitive',
+  //       },
+  //       AND: [
+  //         {
+  //           categoryId: parsedCategoryId,
+  //         },
+  //       ],
+  //     },
+  //     include: {
+  //       category: true,
+  //       unit: true,
+  //       equivalentUnits: {
+  //         include: {
+  //           unit: true,
+  //         },
+  //       },
+  //     },
+  //     orderBy: [
+  //       // {
+  //       //   category: {
+  //       //     name: 'asc',
+  //       //   },
+  //       // },
+  //       {
+  //         name: 'asc',
+  //       },
+  //     ],
+  //   });
+  // }
+
+  async findAll(
+    productName: string,
+    categoryId: string,
+    cursor?: number,
+  ): Promise<Product[]> {
     const parsedCategoryId =
       categoryId !== 'null' &&
       categoryId !== 'undefined' &&
       categoryId !== undefined
         ? parseInt(categoryId)
         : undefined;
-    console.log(parsedCategoryId);
-    return await this.prisma.product.findMany({
-      where: {
-        name: {
-          contains: productName,
-          mode: 'insensitive',
+    if (cursor) {
+      return await this.prisma.product.findMany({
+        where: {
+          name: {
+            contains: productName,
+            mode: 'insensitive',
+          },
+          AND: [
+            {
+              categoryId: parsedCategoryId,
+            },
+          ],
         },
-        AND: [
+        include: {
+          category: true,
+          unit: true,
+          equivalentUnits: {
+            include: {
+              unit: true,
+            },
+          },
+        },
+        orderBy: [
           {
-            categoryId: parsedCategoryId,
+            name: 'asc',
           },
         ],
-      },
-      include: {
-        category: true,
-        unit: true,
-        equivalentUnits: {
-          include: {
-            unit: true,
+        cursor: {
+          id: +cursor,
+        },
+        take: 15,
+      });
+    } else {
+      return await this.prisma.product.findMany({
+        where: {
+          name: {
+            contains: productName,
+            mode: 'insensitive',
+          },
+          AND: [
+            {
+              categoryId: parsedCategoryId,
+            },
+          ],
+        },
+        include: {
+          category: true,
+          unit: true,
+          equivalentUnits: {
+            include: {
+              unit: true,
+            },
           },
         },
-      },
-      orderBy: [
-        // {
-        //   category: {
-        //     name: 'asc',
-        //   },
-        // },
-        {
-          name: 'asc',
-        },
-      ],
-    });
+        orderBy: [
+          {
+            name: 'asc',
+          },
+        ],
+
+        take: 15,
+      });
+    }
   }
 
   async findOne(id: number): Promise<Product> {
