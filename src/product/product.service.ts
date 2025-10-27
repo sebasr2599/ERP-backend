@@ -94,11 +94,23 @@ export class ProductService {
     if (cursor) {
       return await this.prisma.product.findMany({
         where: {
-          name: {
-            contains: productName,
-            mode: 'insensitive',
-          },
           AND: [
+            {
+              OR: [
+                {
+                  name: {
+                    contains: productName,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  productKey: {
+                    contains: productName,
+                    mode: 'insensitive',
+                  },
+                },
+              ],
+            },
             {
               categoryId: parsedCategoryId,
             },
@@ -126,11 +138,23 @@ export class ProductService {
     } else {
       return await this.prisma.product.findMany({
         where: {
-          name: {
-            contains: productName,
-            mode: 'insensitive',
-          },
           AND: [
+            {
+              OR: [
+                {
+                  name: {
+                    contains: productName,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  productKey: {
+                    contains: productName,
+                    mode: 'insensitive',
+                  },
+                },
+              ],
+            },
             {
               categoryId: parsedCategoryId,
             },
@@ -186,10 +210,20 @@ export class ProductService {
   async findByName(name: string): Promise<Product[]> {
     return await this.prisma.product.findMany({
       where: {
-        name: {
-          contains: name,
-          mode: 'insensitive',
-        },
+        OR: [
+          {
+            name: {
+              contains: name,
+              mode: 'insensitive',
+            },
+          },
+          {
+            productKey: {
+              contains: name,
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
     });
   }
