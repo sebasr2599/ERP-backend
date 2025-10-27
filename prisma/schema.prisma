@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,9 +14,9 @@ model User {
   last_name          String
   password           String
   rol                String
-  Inventory          Inventory[]
-  HistoricPrice      HistoricPrice[]
   HistoricEquivalent HistoricEquivalent[]
+  HistoricPrice      HistoricPrice[]
+  Inventory          Inventory[]
   Order              Order[]
 }
 
@@ -32,10 +29,10 @@ model Category {
 model Unit {
   id                 Int                  @id @default(autoincrement())
   name               String               @unique
-  Product            Product[]
   EquivalentUnit     EquivalentUnit[]
   HistoricEquivalent HistoricEquivalent[]
   OrderDetail        OrderDetail[]
+  Product            Product[]
 }
 
 model Client {
@@ -49,85 +46,80 @@ model Product {
   name               String               @unique
   description        String
   priceUnit          Float
-  // priceWholesale     Float
-  category           Category             @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  unit               Unit                 @relation(fields: [unitId], references: [id], onDelete: Cascade)
   image              String
   unitId             Int
-  Inventory          Inventory[]
-  HistoricPrice      HistoricPrice[]
+  categoryId         Int
+  productKey         String?              @unique
   equivalentUnits    EquivalentUnit[]
   HistoricEquivalent HistoricEquivalent[]
+  HistoricPrice      HistoricPrice[]
+  Inventory          Inventory[]
   OrderDetail        OrderDetail[]
-  categoryId         Int
+  category           Category             @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  unit               Unit                 @relation(fields: [unitId], references: [id], onDelete: Cascade)
 }
 
 model Inventory {
   id        Int      @id @default(autoincrement())
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity  Float
   date      DateTime
-  user      User     @relation(fields: [userId], references: [id])
-  // location  String
   productId Int
   userId    Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model HistoricPrice {
   id        Int      @id @default(autoincrement())
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   priceUnit Float
-  // priceWholesale Float
   date      DateTime
-  user      User     @relation(fields: [userId], references: [id])
   productId Int
   userId    Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model EquivalentUnit {
   id         Int     @id @default(autoincrement())
-  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  unit       Unit    @relation(fields: [unitId], references: [id])
   equivalent Float
   productId  Int
   unitId     Int
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  unit       Unit    @relation(fields: [unitId], references: [id])
 }
 
 model HistoricEquivalent {
   id         Int      @id @default(autoincrement())
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  unit       Unit     @relation(fields: [unitId], references: [id])
   equivalent Float
   date       DateTime
-  user       User     @relation(fields: [userId], references: [id])
   productId  Int
   unitId     Int
   userId     Int
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  unit       Unit     @relation(fields: [unitId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 model Order {
   id           Int           @id @default(autoincrement())
   date         DateTime
-  user         User          @relation(fields: [userId], references: [id])
-  // location     String
-  // name         String
-  // wholesale    Boolean
   status       String
   total        Float
   userId       Int
   clientId     Int?
-  orderDetails OrderDetail[]
   Client       Client?       @relation(fields: [clientId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
+  orderDetails OrderDetail[]
 }
 
 model OrderDetail {
   id        Int     @id @default(autoincrement())
-  order     Order   @relation(fields: [orderId], references: [id])
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity  Float
   price     Float
-  unit      Unit    @relation(fields: [unitId], references: [id])
   orderId   Int
   productId Int
   unitId    Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  unit      Unit    @relation(fields: [unitId], references: [id])
 }

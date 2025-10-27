@@ -13,6 +13,7 @@ import { OrderModule } from './order/order.module';
 import { OrderDetailModule } from './order-detail/order-detail.module';
 import { ClientModule } from './client/client.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { HealthModule } from './health/health.module';
 import { APP_GUARD } from '@nestjs/core';
 
 @Module({
@@ -36,6 +37,7 @@ import { APP_GUARD } from '@nestjs/core';
     OrderModule,
     OrderDetailModule,
     ClientModule,
+    HealthModule,
   ],
   providers: [
     {
