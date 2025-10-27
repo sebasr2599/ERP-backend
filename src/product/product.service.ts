@@ -121,7 +121,7 @@ export class ProductService {
         cursor: {
           id: +cursor,
         },
-        take: 15,
+        take: 30,
       });
     } else {
       return await this.prisma.product.findMany({
@@ -151,7 +151,7 @@ export class ProductService {
           },
         ],
 
-        take: 15,
+        take: 30,
       });
     }
   }

@@ -1,5 +1,6 @@
 export class createProductDto {
   readonly name: string;
+  readonly productKey?: string | null;
   readonly description: string;
   readonly priceUnit: number;
   readonly priceWholesale: number;
@@ -21,6 +22,7 @@ export class equivalentUnitDto {
 }
 export class updateProductDto {
   name: string;
+  productKey?: string | null;
   description: string;
   priceUnit: number;
   priceWholesale: number;
