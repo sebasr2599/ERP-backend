@@ -14,6 +14,7 @@ import { OrderService } from './order.service';
 import { Order, Prisma } from '@prisma/client';
 import { JWTAuthGuard } from 'src/auth/jwt-auth.guard';
 import { createOrderDto } from './dto/createOrderDto.dto';
+import { ReleaseOrderDto } from './dto/releaseOrderDto.dto';
 
 @UseGuards(JWTAuthGuard)
 @Controller('order')
@@ -73,9 +74,27 @@ export class OrderController {
     return this.orderService.findallByDateAndUserId(date, +userId);
   }
 
+  @Post('release-all')
+  async releaseAllOrders(
+    @Body() releaseOrderDto?: ReleaseOrderDto,
+  ): Promise<{ count: number }> {
+    const releaseOrderDetails =
+      releaseOrderDto?.releaseOrderDetails !== undefined
+        ? releaseOrderDto.releaseOrderDetails
+        : false;
+    return this.orderService.releaseAllOrders(releaseOrderDetails);
+  }
+
   @Post(':id/release')
-  async releaseOrder(@Param('id') id: string): Promise<Order> {
-    return this.orderService.releaseOrder(+id);
+  async releaseOrder(
+    @Param('id') id: string,
+    @Body() releaseOrderDto?: ReleaseOrderDto,
+  ): Promise<Order> {
+    const releaseOrderDetails =
+      releaseOrderDto?.releaseOrderDetails !== undefined
+        ? releaseOrderDto.releaseOrderDetails
+        : false;
+    return this.orderService.releaseOrder(+id, releaseOrderDetails);
   }
 
   @Patch(':id')
