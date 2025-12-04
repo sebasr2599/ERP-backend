@@ -141,69 +141,86 @@ export class OrderService {
     });
   }
 
-  async releaseOrder(id: number): Promise<Order> {
-    // Get order details
-    const orderDetails = await this.prisma.orderDetail.findMany({
-      where: { orderId: id },
-    });
-
-    // Update inventory based on order details
-    for (const orderDetail of orderDetails) {
-      // Find the product and its unit
-      const product = await this.prisma.product.findUnique({
-        where: { id: orderDetail.productId },
-        include: { unit: true },
+  async releaseOrder(
+    id: number,
+    releaseOrderDetails: boolean = false,
+  ): Promise<Order> {
+    return this.prisma.$transaction(async (prisma) => {
+      // Get order details
+      const orderDetails = await prisma.orderDetail.findMany({
+        where: { orderId: id },
       });
 
-      if (!product) {
-        throw new Error(`Product ID ${orderDetail.productId} not found`);
-      }
+      // Update inventory based on order details if flag is true
+      if (releaseOrderDetails && orderDetails.length > 0) {
+        for (const orderDetail of orderDetails) {
+          // Find the product and its unit
+          const product = await prisma.product.findUnique({
+            where: { id: orderDetail.productId },
+            include: { unit: true },
+          });
 
-      // Determine the quantity to subtract, considering unit conversions if necessary
-      let quantityToSubtract = orderDetail.quantity;
+          if (!product) {
+            throw new Error(`Product ID ${orderDetail.productId} not found`);
+          }
 
-      if (product.unitId !== orderDetail.unitId) {
-        // Find the equivalent unit conversion
-        const equivalentUnit = await this.prisma.equivalentUnit.findFirst({
-          where: {
-            productId: product.id,
-            unitId: orderDetail.unitId,
-          },
-        });
+          // Determine the quantity to subtract, considering unit conversions if necessary
+          let quantityToSubtract = orderDetail.quantity;
 
-        if (!equivalentUnit) {
-          throw new Error(
-            `No equivalent unit found for product ID ${orderDetail.productId} and unit ID ${orderDetail.unitId}`,
-          );
+          if (product.unitId !== orderDetail.unitId) {
+            // Find the equivalent unit conversion from orderDetail.unitId to product.unitId
+            // The equivalent value represents: 1 unit of orderDetail.unitId = equivalent units of product.unitId
+            const equivalentUnit = await prisma.equivalentUnit.findFirst({
+              where: {
+                productId: product.id,
+                unitId: orderDetail.unitId,
+              },
+            });
+
+            if (!equivalentUnit) {
+              throw new Error(
+                `No equivalent unit found for product ID ${orderDetail.productId} converting from unit ID ${orderDetail.unitId} to unit ID ${product.unitId}. Please ensure the equivalent unit is configured in the database.`,
+              );
+            }
+
+            // Convert the order detail quantity to the product's unit
+            // equivalent represents: 1 unit of orderDetail.unitId = equivalent units of product.unitId
+            // Example: If orderDetail is in grams (unitId=2) and product is in kg (unitId=1),
+            // and equivalent = 0.001, then 1000g * 0.001 = 1kg
+            quantityToSubtract *= equivalentUnit.equivalent;
+          }
+
+          // Find the inventory record for the specific product
+          const inventory = await prisma.inventory.findFirst({
+            where: { productId: product.id },
+          });
+
+          if (!inventory) {
+            throw new Error(`Inventory for product ID ${product.id} not found`);
+          }
+
+          // Calculate the new quantity
+          const newQuantity = inventory.quantity - quantityToSubtract;
+
+          if (newQuantity < 0) {
+            throw new Error(
+              `Insufficient inventory for product ID ${product.id}. Available: ${inventory.quantity}, Required: ${quantityToSubtract}`,
+            );
+          }
+
+          // Update the inventory record
+          await prisma.inventory.update({
+            where: { id: inventory.id },
+            data: { quantity: newQuantity },
+          });
         }
-
-        // Convert the order detail quantity to the product's unit
-        quantityToSubtract *= equivalentUnit.equivalent;
       }
 
-      // Find the inventory record for the specific product
-      const inventory = await this.prisma.inventory.findFirst({
-        where: { productId: product.id },
+      // Update the order status to 'RELEASED'
+      return prisma.order.update({
+        where: { id },
+        data: { status: 'RELEASED' },
       });
-
-      if (!inventory) {
-        throw new Error(`Inventory for product ID ${product.id} not found`);
-      }
-
-      // Calculate the new quantity
-      const newQuantity = inventory.quantity - quantityToSubtract;
-
-      // Update the inventory record
-      await this.prisma.inventory.update({
-        where: { id: inventory.id },
-        data: { quantity: newQuantity },
-      });
-    }
-
-    // Update the order status to 'RELEASED'
-    return this.prisma.order.update({
-      where: { id },
-      data: { status: 'RELEASED' },
     });
   }
 
@@ -227,5 +244,110 @@ export class OrderService {
 
   async remove(id: number): Promise<Order> {
     return this.prisma.order.delete({ where: { id } });
+  }
+
+  async releaseAllOrders(releaseOrderDetails: boolean = false): Promise<{ count: number }> {
+    return this.prisma.$transaction(async (prisma) => {
+      // Get all orders that are not already released
+      const ordersToRelease = await prisma.order.findMany({
+        where: {
+          status: {
+            not: 'RELEASED',
+          },
+        },
+        include: {
+          orderDetails: true,
+        },
+      });
+
+      let processedCount = 0;
+
+      // Process each order
+      for (const order of ordersToRelease) {
+        try {
+          // Update inventory based on order details if flag is true
+          if (releaseOrderDetails && order.orderDetails.length > 0) {
+            for (const orderDetail of order.orderDetails) {
+              // Find the product and its unit
+              const product = await prisma.product.findUnique({
+                where: { id: orderDetail.productId },
+                include: { unit: true },
+              });
+
+              if (!product) {
+                console.warn(
+                  `Skipping order ${order.id}: Product ID ${orderDetail.productId} not found`,
+                );
+                continue;
+              }
+
+              // Determine the quantity to subtract, considering unit conversions if necessary
+              let quantityToSubtract = orderDetail.quantity;
+
+              if (product.unitId !== orderDetail.unitId) {
+                // Find the equivalent unit conversion
+                const equivalentUnit = await prisma.equivalentUnit.findFirst({
+                  where: {
+                    productId: product.id,
+                    unitId: orderDetail.unitId,
+                  },
+                });
+
+                if (!equivalentUnit) {
+                  console.warn(
+                    `Skipping order ${order.id}: No equivalent unit found for product ID ${orderDetail.productId} converting from unit ID ${orderDetail.unitId} to unit ID ${product.unitId}`,
+                  );
+                  continue;
+                }
+
+                // Convert the order detail quantity to the product's unit
+                quantityToSubtract *= equivalentUnit.equivalent;
+              }
+
+              // Find the inventory record for the specific product
+              const inventory = await prisma.inventory.findFirst({
+                where: { productId: product.id },
+              });
+
+              if (!inventory) {
+                console.warn(
+                  `Skipping order ${order.id}: Inventory for product ID ${product.id} not found`,
+                );
+                continue;
+              }
+
+              // Calculate the new quantity
+              const newQuantity = inventory.quantity - quantityToSubtract;
+
+              if (newQuantity < 0) {
+                console.warn(
+                  `Skipping order ${order.id}: Insufficient inventory for product ID ${product.id}. Available: ${inventory.quantity}, Required: ${quantityToSubtract}`,
+                );
+                continue;
+              }
+
+              // Update the inventory record
+              await prisma.inventory.update({
+                where: { id: inventory.id },
+                data: { quantity: newQuantity },
+              });
+            }
+          }
+
+          // Update the order status to 'RELEASED'
+          await prisma.order.update({
+            where: { id: order.id },
+            data: { status: 'RELEASED' },
+          });
+
+          processedCount++;
+        } catch (error) {
+          console.error(`Error processing order ${order.id}:`, error);
+          // Continue with other orders even if one fails
+        }
+      }
+
+      return { count: processedCount };
+    });
   }
 }
