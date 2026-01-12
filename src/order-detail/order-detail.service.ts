@@ -15,15 +15,22 @@ export class OrderDetailService {
   }
 
   // find all order details by order id including product name and unit name
+  // Returns OrderDetail's unit at the top level (unit) and Product's unit nested (product.unit)
   async findallByOrderId(orderId: number): Promise<OrderDetail[]> {
     return this.prisma.orderDetail.findMany({
       where: { orderId },
-      include: { product: { include: { unit: true } } },
+      include: {
+        unit: true, // OrderDetail's unit (the unit used in the order detail)
+        product: { include: { unit: true } }, // Product's base unit (for reference)
+      },
     });
   }
 
   async findOne(id: number): Promise<OrderDetail> {
-    return this.prisma.orderDetail.findUnique({ where: { id } });
+    return this.prisma.orderDetail.findUnique({
+      where: { id },
+      include: { unit: true },
+    });
   }
 
   async update(
